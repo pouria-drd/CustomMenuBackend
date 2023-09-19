@@ -12,6 +12,7 @@ router.register(r"groups", GroupViewSet)
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include(router.urls)),
+    path("sandwich-api/", include("custom_menu.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]

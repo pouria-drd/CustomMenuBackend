@@ -139,7 +139,11 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 }
 
-ALLOWED_HOSTS = ["127.0.0.1", "192.168.1.102"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "192.168.1.102",
+    "http://localhost:5173",
+]
 
 INTERNAL_IPS = [
     "127.0.0.1",

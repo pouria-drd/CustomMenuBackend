@@ -97,10 +97,7 @@ class Price(models.Model):
         Product, on_delete=models.RESTRICT, related_name="price"
     )
 
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-    )
+    price = models.IntegerField()
 
     created_at = models.DateTimeField(
         auto_now_add=True,

@@ -32,7 +32,7 @@ class Category(models.Model):
         return self.persian_name
 
     def img_preview(self):
-        return mark_safe(f'<img src = "{self.category_image.url}" width = "64"/>')
+        return mark_safe(f'<img src = "{self.category_image.url}" width = "50"/>')
 
 
 class Product(models.Model):
@@ -85,7 +85,7 @@ class Product(models.Model):
         return self.persian_name
 
     def img_preview(self):
-        return mark_safe(f'<img src = "{self.product_image.url}" width = "64"/>')
+        return mark_safe(f'<img src = "{self.product_image.url}" width = "75"/>')
 
 
 class Price(models.Model):

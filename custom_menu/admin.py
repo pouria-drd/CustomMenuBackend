@@ -37,6 +37,7 @@ class ProductAdmin(admin.ModelAdmin):
         "is_active",
         "created_at",
         "updated_at",
+        "guid",
         "img_preview",
     ]
 

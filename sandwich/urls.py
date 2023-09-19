@@ -1,13 +1,13 @@
-from users import views
 from django.conf import settings
 from django.contrib import admin
 from rest_framework import routers
 from django.urls import path, include
 from django.conf.urls.static import static
+from users.views import UserViewSet, GroupViewSet
 
 router = routers.DefaultRouter()
-router.register(r"users", views.UserViewSet)
-router.register(r"groups", views.GroupViewSet)
+router.register(r"users", UserViewSet)
+router.register(r"groups", GroupViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

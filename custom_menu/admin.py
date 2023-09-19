@@ -10,6 +10,11 @@ class CategoryAdmin(admin.ModelAdmin):
         "is_active",
         "created_at",
         "updated_at",
+        "img_preview",
+    ]
+
+    readonly_fields = [
+        "img_preview",
     ]
 
     list_filter = [
@@ -28,9 +33,15 @@ class ProductAdmin(admin.ModelAdmin):
         "persian_name",
         "english_name",
         "category",
+        "max_amount",
         "is_active",
         "created_at",
         "updated_at",
+        "img_preview",
+    ]
+
+    readonly_fields = [
+        "img_preview",
     ]
 
     list_filter = [
@@ -57,11 +68,16 @@ class PriceAdmin(admin.ModelAdmin):
         "updated_at",
     ]
 
-    list_editable = [
+    readonly_fields = [
+        "product",
         "price",
+        "created_at",
+        "updated_at",
     ]
 
     search_fields = [
+        "price",
+        "product",
         "product__persian_name",
         "product__english_name",
     ]
@@ -76,15 +92,22 @@ class QuantityAdmin(admin.ModelAdmin):
     list_display = [
         "product",
         "quantity",
+        "is_by_user",
         "created_at",
         "updated_at",
     ]
 
-    list_editable = [
+    readonly_fields = [
+        "product",
         "quantity",
+        "is_by_user",
+        "created_at",
+        "updated_at",
     ]
 
     search_fields = [
+        "product",
+        "quantity",
         "product__persian_name",
         "product__english_name",
     ]

@@ -34,6 +34,7 @@ class ProductAdmin(admin.ModelAdmin):
         "english_name",
         "category",
         "max_amount",
+        "has_tax",
         "is_active",
         "created_at",
         "updated_at",

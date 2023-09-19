@@ -63,6 +63,10 @@ class Product(models.Model):
         default=True,
     )
 
+    has_tax = models.BooleanField(
+        default=True,
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )

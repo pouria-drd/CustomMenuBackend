@@ -5,6 +5,7 @@ from django.contrib import admin
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = [
+        "id",
         "persian_name",
         "english_name",
         "is_active",
@@ -30,6 +31,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = [
+        "id",
         "persian_name",
         "english_name",
         "category",

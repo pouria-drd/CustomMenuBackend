@@ -1,22 +1,13 @@
+from rest_framework.viewsets import ModelViewSet
 from custom_menu.models import Category, Product
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from custom_menu.serializers import CategorySerializer, ProductSerializer
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 
 class ProductListView(ListAPIView):
     """
     This view lists all instances of the Product model.
-    """
-
-    queryset = Product.objects.all()  # Query to retrieve all instances of Product model
-    serializer_class = ProductSerializer  # Serializer class for Product model
-    permission_classes = [AllowAny]  # Allow any user to access this view
-
-
-class ProductDetailView(RetrieveAPIView):
-    """
-    This view retrieves a single instance of the Product model by its primary key.
     """
 
     queryset = Product.objects.all()  # Query to retrieve all instances of Product model
@@ -36,9 +27,19 @@ class CategoryListView(ListAPIView):
     permission_classes = [AllowAny]  # Allow any user to access this view
 
 
-class CategoryDetailView(RetrieveAPIView):
+class ProductViewSet(ModelViewSet):
     """
-    This view retrieves a single instance of the Category model by its primary key.
+    API endpoint that allows product to be viewed or edited.
+    """
+
+    queryset = Product.objects.all()  # Query to retrieve all instances of Product model
+    serializer_class = ProductSerializer  # Serializer class for Product model
+    permission_classes = [AllowAny]  # Allow any user to access this view
+
+
+class CategoryViewSet(ModelViewSet):
+    """
+    API endpoint that allows category to be viewed or edited.
     """
 
     queryset = (

@@ -4,10 +4,13 @@ from rest_framework import routers
 from django.urls import path, include
 from django.conf.urls.static import static
 from users.views import UserViewSet, GroupViewSet
+from custom_menu.views import CategoryViewSet, ProductViewSet
 
 router = routers.DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"groups", GroupViewSet)
+router.register(r"categories", CategoryViewSet)
+router.register(r"products", ProductViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

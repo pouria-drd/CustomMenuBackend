@@ -23,8 +23,6 @@ class QuantitySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(read_only=True, slug_field="persian_name")
-    # price = PriceSerializer()
-    # quantity = QuantitySerializer()
     latest_price = serializers.SerializerMethodField()
     latest_quantity = serializers.SerializerMethodField()
     product_image = serializers.SerializerMethodField()
@@ -45,17 +43,15 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_latest_price(self, obj):
-        latest_price = (
-            Price.objects.filter(product__id=obj.id).order_by("-created_at").first()
-        )
-        # latest_price = obj.prices.order_by("-created_at").first()
+        latest_price = obj.prices.order_by("-id").first()
+
         if latest_price:
             serializer = PriceSerializer(instance=latest_price)
             return serializer.data
         return None
 
     def get_latest_quantity(self, obj):
-        latest_quantity = obj.quantities.order_by("-created_at").first()
+        latest_quantity = obj.quantities.order_by("-id").first()
         if latest_quantity:
             serializer = QuantitySerializer(instance=latest_quantity)
             return serializer.data

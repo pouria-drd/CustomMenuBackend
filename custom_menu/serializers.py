@@ -49,7 +49,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    products = serializers.SerializerMethodField()
+    products = ProductSerializer(many=True)
     category_image = serializers.SerializerMethodField()
 
     class Meta:
@@ -61,11 +61,6 @@ class CategorySerializer(serializers.ModelSerializer):
             "category_image",
             "products",
         ]
-
-    def get_products(self, obj):
-        products = Product.objects.filter(category=obj)
-        serializer = ProductSerializer(products, many=True, context=self.context)
-        return serializer.data
 
     def get_category_image(self, obj):
         if obj.category_image:

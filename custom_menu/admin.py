@@ -72,12 +72,12 @@ class PriceAdmin(admin.ModelAdmin):
         "updated_at",
     ]
 
-    readonly_fields = [
-        "product",
-        "price",
-        "created_at",
-        "updated_at",
-    ]
+    # readonly_fields = [
+    #     "product",
+    #     "price",
+    #     "created_at",
+    #     "updated_at",
+    # ]
 
     search_fields = [
         "price",
@@ -101,13 +101,13 @@ class QuantityAdmin(admin.ModelAdmin):
         "updated_at",
     ]
 
-    readonly_fields = [
-        "product",
-        "quantity",
-        "is_by_user",
-        "created_at",
-        "updated_at",
-    ]
+    # readonly_fields = [
+    #     "product",
+    #     "quantity",
+    #     "is_by_user",
+    #     "created_at",
+    #     "updated_at",
+    # ]
 
     search_fields = [
         "product",

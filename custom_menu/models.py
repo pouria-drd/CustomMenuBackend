@@ -36,54 +36,30 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    guid = models.CharField(
-        max_length=100,
-        unique=True,
-        default=uuid.uuid4(),
-    )
+    guid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    persian_name = models.CharField(
-        max_length=100,
-    )
+    persian_name = models.CharField(max_length=100)
 
-    english_name = models.CharField(
-        max_length=100,
-    )
+    english_name = models.CharField(max_length=100)
 
-    description = models.TextField(
-        max_length=100,
-        blank=True,
-    )
+    description = models.TextField(max_length=100, blank=True)
 
-    max_amount = models.IntegerField(
-        default=2,
-    )
+    max_amount = models.IntegerField(default=2)
 
-    is_active = models.BooleanField(
-        default=True,
-    )
+    is_active = models.BooleanField(default=True)
 
-    has_tax = models.BooleanField(
-        default=True,
-    )
+    has_tax = models.BooleanField(default=True)
 
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    updated_at = models.DateTimeField(
-        auto_now=True,
-    )
+    updated_at = models.DateTimeField(auto_now=True)
 
     product_image = models.ImageField(
-        default="product_default.png",
-        upload_to="images/products/",
+        default="product_default.png", upload_to="images/products/"
     )
 
     category = models.ForeignKey(
-        Category,
-        on_delete=models.RESTRICT,
-        related_name="products",
+        Category, on_delete=models.RESTRICT, related_name="products"
     )
 
     def __str__(self):
@@ -94,8 +70,8 @@ class Product(models.Model):
 
 
 class Price(models.Model):
-    product = models.OneToOneField(
-        Product, on_delete=models.RESTRICT, related_name="price"
+    product = models.ForeignKey(
+        Product, on_delete=models.RESTRICT, related_name="prices"
     )
 
     price = models.IntegerField()
@@ -113,10 +89,10 @@ class Price(models.Model):
 
 
 class Quantity(models.Model):
-    product = models.OneToOneField(
+    product = models.ForeignKey(
         Product,
         on_delete=models.RESTRICT,
-        related_name="quantity",
+        related_name="quantities",
     )
 
     quantity = models.IntegerField()

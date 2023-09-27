@@ -100,6 +100,15 @@ class CategorySerializer(serializers.ModelSerializer):
             return self.context["request"].build_absolute_uri(obj.category_image.url)
         return None
 
+
+class CategoryUpdateSerializer(serializers.ModelSerializer):
+    persian_name = serializers.CharField(required=True, max_length=20)
+    category_image = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Category
+        fields = ["persian_name", "is_active", "category_image"]
+
     # def get_category_image(self, obj):
     #     if obj.category_image:
     #         # with open(obj.category_image.path, "rb") as image_file:
@@ -109,3 +118,18 @@ class CategorySerializer(serializers.ModelSerializer):
     #         return obj.category_image.url
     #     else:
     #         return None
+
+
+class ProductUpdateSerializer(serializers.ModelSerializer):
+    product_image = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Product
+        fields = [
+            "persian_name",
+            "description",
+            "max_amount",
+            "has_tax",
+            "is_active",
+            "product_image",
+        ]

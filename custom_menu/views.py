@@ -1,3 +1,4 @@
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from custom_menu.models import Category, Product
 from rest_framework.generics import ListAPIView, UpdateAPIView
@@ -6,6 +7,8 @@ from custom_menu.serializers import (
     CategorySerializer,
     ProductSerializer,
     FullCategorySerializer,
+    ProductUpdateSerializer,
+    CategoryUpdateSerializer,
 )
 
 
@@ -50,9 +53,8 @@ class CategoryUpdateView(UpdateAPIView):
     API endpoint that allows categories to be patched or put.
     """
 
-    queryset = (
-        Category.objects.all()
-    )  # Query to retrieve all instances of Category model
+    # Query to retrieve all instances of Category model
+    queryset = Category.objects.all()
     serializer_class = CategorySerializer  # Serializer class for Category model
     permission_classes = [AllowAny]  # Allow any user to access this view
     http_method_names = ["patch"]  # Only patches are allowed
@@ -64,7 +66,7 @@ class ProductUpdateView(UpdateAPIView):
     """
 
     queryset = Product.objects.all()  # Query to retrieve all instances of Product model
-    serializer_class = ProductSerializer  # Serializer class for Product model
+    serializer_class = ProductUpdateSerializer  # Serializer class for Product model
     permission_classes = [AllowAny]  # Allow any user to access this view
     http_method_names = ["patch"]  # Only patches are allowed
 

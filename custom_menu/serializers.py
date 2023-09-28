@@ -72,6 +72,7 @@ class FullCategorySerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "persian_name",
+            "english_name",
             "is_active",
             "category_image",
             "products",
@@ -91,6 +92,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "persian_name",
+            "english_name",
             "is_active",
             "category_image",
         ]
@@ -103,11 +105,13 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CategoryUpdateSerializer(serializers.ModelSerializer):
     persian_name = serializers.CharField(required=True, max_length=20)
+    english_name = serializers.CharField(required=False, max_length=20)
+    is_active = serializers.BooleanField(default=True)
     category_image = serializers.ImageField(required=False)
 
     class Meta:
         model = Category
-        fields = ["persian_name", "is_active", "category_image"]
+        fields = ["persian_name", "english_name", "is_active", "category_image"]
 
     # def get_category_image(self, obj):
     #     if obj.category_image:

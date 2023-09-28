@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from custom_menu.models import Category, Product
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from custom_menu.serializers import (
     CategorySerializer,
@@ -47,6 +47,15 @@ class ProductListView(ListAPIView):
     permission_classes = [AllowAny]  # Allow any user to access this view
 
 
+# Create API --------------------------------------------------------------------
+class CategoryCreateView(CreateAPIView):
+    # Query to retrieve all instances of Category model
+    queryset = Category.objects.all()
+    serializer_class = CategoryUpdateSerializer  # Serializer class for Category model
+    permission_classes = [AllowAny]  # Allow any user to access this view
+    http_method_names = ["post"]  # Only patches are allowed
+
+
 # Update API --------------------------------------------------------------------
 class CategoryUpdateView(UpdateAPIView):
     """
@@ -55,7 +64,7 @@ class CategoryUpdateView(UpdateAPIView):
 
     # Query to retrieve all instances of Category model
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer  # Serializer class for Category model
+    serializer_class = CategoryUpdateSerializer  # Serializer class for Category model
     permission_classes = [AllowAny]  # Allow any user to access this view
     http_method_names = ["patch"]  # Only patches are allowed
 

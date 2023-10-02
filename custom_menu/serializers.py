@@ -6,19 +6,15 @@ from custom_menu.models import Product, Category, Price, Quantity
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
-        fields = [
-            "product",
-            "price",
-        ]
+
+        fields = ["product", "price"]
 
 
 class QuantitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Quantity
-        fields = [
-            "product",
-            "quantity",
-        ]
+
+        fields = ["product", "quantity"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -136,4 +132,19 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
             "has_tax",
             "is_active",
             "product_image",
+        ]
+
+
+class ProductCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            "persian_name",
+            "english_name",
+            "description",
+            "max_amount",
+            "is_active",
+            "has_tax",
+            "product_image",
+            "category",
         ]

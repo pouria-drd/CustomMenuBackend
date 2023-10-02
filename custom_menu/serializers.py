@@ -29,6 +29,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "id",
             "persian_name",
             "description",
+            "updated_at",
             "max_amount",
             "has_tax",
             "is_active",
@@ -67,9 +68,10 @@ class FullCategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = [
             "id",
+            "is_active",
+            "updated_at",
             "persian_name",
             "english_name",
-            "is_active",
             "category_image",
             "products",
         ]

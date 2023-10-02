@@ -133,6 +133,7 @@ class PriceCreateView(CreateAPIView):
                 else:
                     price = Price.objects.create(product=product, price=new_price)
                     price.save()
+                    product.save()
                     return Response(
                         {"detail": "قیمت با موفقیت به روز شد"},
                         status=status.HTTP_201_CREATED,
@@ -168,6 +169,7 @@ class QuantityCreateView(CreateAPIView):
                 )
 
                 quantity.save()
+                product.save()
                 return Response(
                     {"detail": "مقدار با موفقیت به روز شد"},
                     status=status.HTTP_201_CREATED,

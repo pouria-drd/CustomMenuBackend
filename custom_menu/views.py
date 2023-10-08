@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from custom_menu.models import Category, Product
+from rest_framework.permissions import IsAdminUser
 from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from custom_menu.serializers import (
     PriceSerializer,
     QuantitySerializer,
@@ -28,7 +28,7 @@ class CategoryListView(ListAPIView):
         Category.objects.all()
     )  # Query to retrieve all instances of Category model
     serializer_class = CategorySerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
 
 
 class FullCategoryListView(ListAPIView):
@@ -40,7 +40,7 @@ class FullCategoryListView(ListAPIView):
         Category.objects.all()
     )  # Query to retrieve all instances of Category model
     serializer_class = FullCategorySerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
 
 
 class ProductListView(ListAPIView):
@@ -50,7 +50,7 @@ class ProductListView(ListAPIView):
 
     queryset = Product.objects.all()  # Query to retrieve all instances of Product model
     serializer_class = ProductSerializer  # Serializer class for Product model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
 
 
 # Create API --------------------------------------------------------------------
@@ -62,7 +62,7 @@ class CategoryCreateView(CreateAPIView):
     # Query to retrieve all instances of Category model
     queryset = Category.objects.all()
     serializer_class = CategoryUpdateSerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
     http_method_names = ["post"]  # Only post are allowed
 
 
@@ -74,7 +74,7 @@ class ProductCreateView(CreateAPIView):
     # Query to retrieve all instances of Product model
     queryset = Product.objects.all()
     serializer_class = ProductCreateSerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
     http_method_names = ["post"]  # Only post are allowed
 
     @transaction.atomic
@@ -82,7 +82,7 @@ class ProductCreateView(CreateAPIView):
         price_data = request.data.get("price")
         quantity_data = request.data.get("quantity")
 
-        product_serializer = ProductCreateSerializer(data=request.data)
+        product_serializer = self.serializer_class(data=request.data)
 
         if product_serializer.is_valid():
             product_data = product_serializer.validated_data
@@ -113,7 +113,7 @@ class PriceCreateView(CreateAPIView):
     # Query to retrieve all instances of Prices model
     queryset = Price.objects.all()
     serializer_class = PriceSerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
     http_method_names = ["post"]  # Only post are allowed
 
     def post(self, request):
@@ -153,7 +153,7 @@ class QuantityCreateView(CreateAPIView):
     # Query to retrieve all instances of Quantities model
     queryset = Quantity.objects.all()
     serializer_class = QuantitySerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
     http_method_names = ["post"]  # Only post are allowed
 
     def post(self, request):
@@ -190,7 +190,7 @@ class CategoryUpdateView(UpdateAPIView):
     # Query to retrieve all instances of Category model
     queryset = Category.objects.all()
     serializer_class = CategoryUpdateSerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
     http_method_names = ["patch"]  # Only patches are allowed
 
 
@@ -201,7 +201,7 @@ class ProductUpdateView(UpdateAPIView):
 
     queryset = Product.objects.all()  # Query to retrieve all instances of Product model
     serializer_class = ProductUpdateSerializer  # Serializer class for Product model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
     http_method_names = ["patch"]  # Only patches are allowed
 
 
@@ -215,7 +215,7 @@ class CategoryViewSet(ModelViewSet):
         Category.objects.all()
     )  # Query to retrieve all instances of Category model
     serializer_class = CategorySerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
 
 
 class FullCategoryViewSet(ModelViewSet):
@@ -227,7 +227,7 @@ class FullCategoryViewSet(ModelViewSet):
         Category.objects.all()
     )  # Query to retrieve all instances of Category model
     serializer_class = FullCategorySerializer  # Serializer class for Category model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view
 
 
 class ProductViewSet(ModelViewSet):
@@ -237,4 +237,4 @@ class ProductViewSet(ModelViewSet):
 
     queryset = Product.objects.all()  # Query to retrieve all instances of Product model
     serializer_class = ProductSerializer  # Serializer class for Product model
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [IsAdminUser]  # Only admin can access this view

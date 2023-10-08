@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,10 +36,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_cleanup.apps.CleanupConfig",
     "corsheaders",
     "rest_framework",
+    "rest_framework.authtoken",
     "debug_toolbar",
-    "django_cleanup.apps.CleanupConfig",
+    # my apps
     "users",
     "custom_menu",
 ]
@@ -134,10 +137,22 @@ MEDIA_URL = "/media/"  # Public URL at the browser
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "users.authentication.CustomTokenAuthentication",
+    ],
     # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    # "PAGE_SIZE": 100s,
+    # "PAGE_SIZE": 100,
+    # "DEFAULT_AUTHENTICATION_CLASSES": [
+    #     "rest_framework.authentication.TokenAuthentication"
+    # ],
+    # "DEFAULT_PERMISSION_CLASSES": [
+    #     "rest_framework.permissions.IsAuthenticated",
+    # ],
 }
+
+TOKEN_EXPIRATION_TIME = 24  # Token will expire after 24 hours
 
 ALLOWED_HOSTS = [
     "127.0.0.1",

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     # my apps
     "users",
+    "invoice",
     "custom_menu",
 ]
 

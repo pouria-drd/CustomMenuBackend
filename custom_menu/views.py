@@ -1,21 +1,13 @@
 from custom_menu.models import *
+from custom_menu.serializers import *
+
 from django.db import transaction
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from custom_menu.models import Category, Product
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
-from custom_menu.serializers import (
-    PriceSerializer,
-    QuantitySerializer,
-    CategorySerializer,
-    ProductSerializer,
-    FullCategorySerializer,
-    ProductCreateSerializer,
-    ProductUpdateSerializer,
-    CategoryUpdateSerializer,
-)
 
 
 # List API ----------------------------------------------------------------------
@@ -40,7 +32,7 @@ class FullCategoryListView(ListAPIView):
         Category.objects.all()
     )  # Query to retrieve all instances of Category model
     serializer_class = FullCategorySerializer  # Serializer class for Category model
-    permission_classes = [IsAdminUser]  # Only admin can access this view
+    permission_classes = [AllowAny]  # Only admin can access this view
 
 
 class ProductListView(ListAPIView):

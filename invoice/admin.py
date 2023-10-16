@@ -1,5 +1,5 @@
+from invoice.models import *
 from django.contrib import admin
-from invoice.models import PaymentType, Invoice, InvoiceProducts, InvoiceProductDetails
 
 
 class InvoiceProductDetailsInline(admin.TabularInline):
@@ -37,64 +37,29 @@ class InvoiceProductDetailsAdmin(admin.ModelAdmin):
     list_display = ["invoice_product", "price", "count"]
 
 
-# @admin.register(PaymentType)
-# class PaymentDetailAdmin(admin.ModelAdmin):
-#     list_display = [
-#         "id",
-#         "name",
-#     ]
+# Temporary Invoice  ----------------------------------------------------------------------
+class TempInvoiceProductDetailsInline(admin.TabularInline):
+    model = TempInvoiceProductDetails
+    extra = 1
 
 
-# @admin.register(InvoiceProductDetails)
-# class InvoiceDetailInline(admin.ModelAdmin):
-#     list_display = [
-#         "id",
-#         "invoice_product",
-#         "price",
-#         "count",
-#     ]
-
-#     search_fields = [
-#         "invoice_product",
-#         "price",
-#         "count",
-#     ]
-
-#     list_filter = [
-#         "invoice_product",
-#         "price",
-#         "count",
-#     ]
+class TempInvoiceProductsInline(admin.TabularInline):
+    model = TempInvoiceProducts
+    inlines = [TempInvoiceProductDetailsInline]
+    extra = 1
 
 
-# class InvoiceDetailInline(admin.TabularInline):
-#     model = InvoiceProducts
-#     extra = 1
+@admin.register(TempInvoice)
+class TempInvoiceAdmin(admin.ModelAdmin):
+    list_display = ["user", "created_at"]
+    inlines = [TempInvoiceProductsInline]
 
 
-# class InvoiceAdmin(admin.ModelAdmin):
-#     inlines = [InvoiceDetailInline]
-
-#     list_display = [
-#         "invoice_number",
-#         "user",
-#         "payment_type",
-#         "created_at",
-#         "updated_at",
-#     ]
-
-#     exclude = ("invoice_number",)
-
-#     search_fields = [
-#         "user",
-#         "payment_type",
-#     ]
-
-#     list_filter = [
-#         "created_at",
-#         "updated_at",
-#     ]
+@admin.register(TempInvoiceProducts)
+class TempInvoiceProductsAdmin(admin.ModelAdmin):
+    list_display = ["title", "invoice", "count"]
 
 
-# admin.site.register(Invoice, InvoiceAdmin)
-# admin.site.register(InvoiceDetail)
+@admin.register(TempInvoiceProductDetails)
+class TempInvoiceProductDetailsAdmin(admin.ModelAdmin):
+    list_display = ["invoice_product", "price", "count"]

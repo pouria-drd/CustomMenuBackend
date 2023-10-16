@@ -85,7 +85,7 @@ class Price(models.Model):
     )
 
     def __str__(self):
-        return f"{self.price} | {self.product} | {self.created_at}"
+        return f"{self.price}"
 
 
 class Quantity(models.Model):

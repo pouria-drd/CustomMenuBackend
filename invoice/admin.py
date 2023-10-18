@@ -51,15 +51,15 @@ class TempInvoiceProductsInline(admin.TabularInline):
 
 @admin.register(TempInvoice)
 class TempInvoiceAdmin(admin.ModelAdmin):
-    list_display = ["user", "created_at"]
+    list_display = ["id", "user", "created_at"]
     inlines = [TempInvoiceProductsInline]
 
 
 @admin.register(TempInvoiceProducts)
 class TempInvoiceProductsAdmin(admin.ModelAdmin):
-    list_display = ["title", "invoice", "count"]
+    list_display = ["id", "title", "invoice", "count"]
 
 
 @admin.register(TempInvoiceProductDetails)
 class TempInvoiceProductDetailsAdmin(admin.ModelAdmin):
-    list_display = ["invoice_product", "price", "count"]
+    list_display = ["id", "invoice_product", "price", "count"]

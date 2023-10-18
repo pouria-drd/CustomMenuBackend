@@ -3,9 +3,87 @@ from custom_menu.models import *
 from invoice.serializers import *
 from django.db import transaction
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAdminUser
 from rest_framework.generics import CreateAPIView, ListAPIView
+
+
+# List API ----------------------------------------------------------------------
+class TempInvoiceListView(ListAPIView):
+    """
+    API endpoint that allows temporary invoice to be view.
+    """
+
+    # Query to retrieve all instances of Category model
+    queryset = TempInvoice.objects.all()
+    serializer_class = TempInvoiceSerializer  # Serializer class for Category model
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
+
+
+class TempInvoiceDetailView(APIView):
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
+
+    def get(self, request, pk):
+        try:
+            temp_invoice = get_object_or_404(TempInvoice, id=pk)
+            data = {
+                "id": temp_invoice.id,
+                "created_at": temp_invoice.created_at,
+                "description": temp_invoice.description,
+                "user": temp_invoice.user,
+                "products": [],
+            }
+
+            invoice_total_price = 0
+
+            for product in temp_invoice.temp_invoice_products.prefetch_related(
+                "temp_invoice_product_details__price__product"
+            ):
+                product_data = {
+                    "title": product.title,
+                    "description": product.description,
+                    "count": product.count,
+                    "details": [],
+                }
+
+                product_total_price = 0
+
+                for detail in product.temp_invoice_product_details.all():
+                    detail_data = {
+                        "name": str(detail.price.product),
+                        "has_tax": detail.price.product.has_tax,
+                        "price": str(detail.price),
+                        "count": detail.count,
+                    }
+
+                    total_price = detail.count * int(str(detail.price))
+
+                    if detail.price.product.has_tax:
+                        total_price += round(total_price * 9 / 100)
+
+                    product_total_price += total_price
+
+                    detail_data["total_price"] = total_price
+
+                    product_data["details"].append(detail_data)
+
+                product_data["total_price"] = product_total_price * product.count
+
+                data["products"].append(product_data)
+
+                invoice_total_price += product_data["total_price"]
+
+            data["total_price"] = invoice_total_price
+
+            return Response({"data": data}, status=status.HTTP_200_OK)
+
+        except:
+            return Response(
+                {"message": "مشکلی پیش آمده است"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 # Create API --------------------------------------------------------------------

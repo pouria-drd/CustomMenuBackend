@@ -6,7 +6,7 @@ class TempInvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempInvoice
 
-        fields = ["user", "description"]
+        fields = ["id", "user", "created_at"]
 
 
 class TempInvoiceProductsSerializer(serializers.ModelSerializer):

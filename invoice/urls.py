@@ -2,11 +2,19 @@ from invoice.views import *
 from django.urls import path
 
 urlpatterns = [
-    path("temp-invoice/", TempInvoiceCreateView.as_view(), name="temp-invoice"),
+    # POST ---------------------------------------------------------------------
+    path("create-invoice/", InvoiceCreateView.as_view(), name="create-invoice"),
+    path(
+        "create-temp-invoice/",
+        TempInvoiceCreateView.as_view(),
+        name="create-temp-invoice",
+    ),
+    # GET ----------------------------------------------------------------------
+    path("payment-choices/", PaymentChoiceListView.as_view(), name="payment-choices"),
     path("temp-invoice-list/", TempInvoiceListView.as_view(), name="temp-invoice-list"),
     path(
-        "temp-invoice-list/<int:pk>",
+        "temp-invoice-detail/<int:pk>",
         TempInvoiceDetailView.as_view(),
-        name="temp-invoice-list",
+        name="temp-invoice-detail",
     ),
 ]

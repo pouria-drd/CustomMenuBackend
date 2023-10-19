@@ -17,7 +17,9 @@ class Invoice(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(max_length=255, blank=True)
-    user = models.ForeignKey(User, related_name="invoices", on_delete=models.RESTRICT)
+    user = models.ForeignKey(
+        User, blank=True, null=True, related_name="invoices", on_delete=models.RESTRICT
+    )
     payment_type = models.ForeignKey(
         PaymentType, related_name="invoices", on_delete=models.RESTRICT
     )

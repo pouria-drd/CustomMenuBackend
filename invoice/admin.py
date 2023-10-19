@@ -20,7 +20,7 @@ class PaymentTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ["invoice_number", "user", "payment_type", "created_at"]
+    list_display = ["id", "invoice_number", "user", "payment_type", "created_at"]
     exclude = [
         "invoice_number",
     ]
@@ -29,12 +29,12 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(InvoiceProducts)
 class InvoiceProductsAdmin(admin.ModelAdmin):
-    list_display = ["title", "invoice", "count"]
+    list_display = ["id", "title", "invoice", "count"]
 
 
 @admin.register(InvoiceProductDetails)
 class InvoiceProductDetailsAdmin(admin.ModelAdmin):
-    list_display = ["invoice_product", "price", "count"]
+    list_display = ["id", "invoice_product", "price", "count"]
 
 
 # Temporary Invoice  ----------------------------------------------------------------------

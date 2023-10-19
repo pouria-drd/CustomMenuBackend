@@ -11,9 +11,20 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 
 
 # List API ----------------------------------------------------------------------
+class PaymentChoiceListView(ListAPIView):
+    """
+    API endpoint that allows payment choices to be viewed.
+    """
+
+    # Query to retrieve all instances of Category model
+    queryset = PaymentType.objects.all()
+    serializer_class = PaymentTypeSerializer  # Serializer class for Category model
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
+
+
 class TempInvoiceListView(ListAPIView):
     """
-    API endpoint that allows temporary invoice to be view.
+    API endpoint that allows temporary invoice to be viewed.
     """
 
     # Query to retrieve all instances of Category model
@@ -32,7 +43,7 @@ class TempInvoiceDetailView(APIView):
                 "id": temp_invoice.id,
                 "created_at": temp_invoice.created_at,
                 "description": temp_invoice.description,
-                "user": temp_invoice.user,
+                "user": temp_invoice.user.username,
                 "products": [],
             }
 
@@ -87,58 +98,105 @@ class TempInvoiceDetailView(APIView):
 
 
 # Create API --------------------------------------------------------------------
+class InvoiceCreateView(CreateAPIView):
+    """
+    API endpoint that allows invoice to be create.
+    """
+
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
+
+    @transaction.atomic
+    def post(self, request):
+        user = request.user
+
+        temp_invoice_id = request.data.get("temp_invoice_id")
+        payment_type_id = request.data.get("payment_type_id")
+
+        temp_invoice = get_object_or_404(TempInvoice, id=temp_invoice_id)
+        payment_type = get_object_or_404(PaymentType, id=payment_type_id)
+
+        new_invoice = None
+
+        if user:
+            new_invoice = Invoice.objects.create(user=user, payment_type=payment_type)
+        else:
+            new_invoice = Invoice.objects.create(payment_type=payment_type)
+
+        temp_invoice_products_list = temp_invoice.temp_invoice_products.all()
+
+        for product in temp_invoice_products_list:
+            new_product = InvoiceProducts.objects.create(
+                invoice=new_invoice,
+                count=product.count,
+                title=f"{new_invoice} فاکتور",
+                description=f"{product.count} عدد از این محصول",
+            )
+
+            for detail in product.temp_invoice_product_details.all():
+                new_detail = InvoiceProductDetails.objects.create(
+                    invoice_product=new_product, count=detail.count, price=detail.price
+                )
+
+        return Response({"data": "ok"}, status=status.HTTP_200_OK)
+
+
 class TempInvoiceCreateView(CreateAPIView):
     """
     API endpoint that allows temporary invoice to be create.
     """
 
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
+
     @transaction.atomic
     def post(self, request):
-        temp_invoice = TempInvoice.objects.create()
+        try:
+            user = request.user
 
-        for index, data in enumerate(request.data):
-            print("----- list", index + 1, " -----")
-            listCount = int(str(data["count"]))
-            print("list count:", listCount, ": \n")
+            if user:
+                temp_invoice = TempInvoice.objects.create(user=user)
+            else:
+                temp_invoice = TempInvoice.objects.create()
 
-            temp_invoice_product = TempInvoiceProducts.objects.create(
-                invoice=temp_invoice, count=listCount
-            )
+            for index, data in enumerate(request.data):
+                listCount = int(str(data["count"]))
 
-            for item in data["items"]:
-                item_count = item["count"]
-                productID = item["productID"]
-                product = Product.objects.get(id=productID)
-
-                print("Product ID:", productID)
-                print("Product Name:", item["name"])
-                print("Product Count:", item_count, "\n")
-
-                latest_quantity = int(
-                    str(product.quantities.order_by("-created_at").first())
+                temp_invoice_product = TempInvoiceProducts.objects.create(
+                    invoice=temp_invoice, count=listCount
                 )
-                print("latest_quantity:", latest_quantity)
 
-                total_count = listCount * item_count
-                print("total_count:", total_count)
+                for item in data["items"]:
+                    item_count = item["count"]
+                    productID = item["productID"]
+                    product = Product.objects.get(id=productID)
 
-                if total_count > latest_quantity:
-                    return Response(
-                        {"message": "عدم موجودی", "code": 100},
-                        status=status.HTTP_400_BAD_REQUEST,
+                    latest_quantity = int(
+                        str(product.quantities.order_by("-created_at").first())
                     )
 
-                latest_price = product.prices.order_by("-created_at").first()
-                print("latest_price:", latest_price)
+                    total_count = listCount * item_count
 
-                total_product_price = int(str(latest_price)) * item_count
-                print("total_price:", total_product_price)
-                print("******")
+                    if total_count > latest_quantity:
+                        return Response(
+                            {"message": "عدم موجودی", "code": 100},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
 
-                temp_invoice_product_detail = TempInvoiceProductDetails.objects.create(
-                    invoice_product=temp_invoice_product,
-                    price=latest_price,
-                    count=item_count,
-                )
+                    latest_price = product.prices.order_by("-created_at").first()
 
-        return Response("Success")
+                    temp_invoice_product_detail = (
+                        TempInvoiceProductDetails.objects.create(
+                            invoice_product=temp_invoice_product,
+                            price=latest_price,
+                            count=item_count,
+                        )
+                    )
+
+            return Response(
+                {"message": "عملیات موفق بود"}, status=status.HTTP_201_CREATED
+            )
+
+        except:
+            return Response(
+                {"message": "مشکلی پیش آمده است"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

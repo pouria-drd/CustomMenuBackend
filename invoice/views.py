@@ -39,13 +39,18 @@ class TempInvoiceDetailView(APIView):
     def get(self, request, pk):
         try:
             temp_invoice = get_object_or_404(TempInvoice, id=pk)
+
             data = {
                 "id": temp_invoice.id,
                 "created_at": temp_invoice.created_at,
                 "description": temp_invoice.description,
-                "user": temp_invoice.user.username,
                 "products": [],
             }
+
+            username = f"{temp_invoice.user}"
+
+            if username:
+                data["user"] = username
 
             invoice_total_price = 0
 
@@ -90,11 +95,45 @@ class TempInvoiceDetailView(APIView):
 
             return Response({"data": data}, status=status.HTTP_200_OK)
 
-        except:
+        except Exception as e:
+            print(e)
             return Response(
                 {"message": "مشکلی پیش آمده است"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+def get_unique_product_total_count(temp_invoice_products_list: list):
+    unique_product_list = {}
+
+    for product in temp_invoice_products_list:
+        for detail in product.temp_invoice_product_details.all():
+            item = {
+                "product_id": str(detail.price.product.id),
+                "total_count": detail.count * product.count,
+            }
+
+            if item["product_id"] in unique_product_list:
+                unique_product_list[str(detail.price.product.id)] += (
+                    detail.count * product.count
+                )
+            else:
+                unique_product_list[str(detail.price.product.id)] = (
+                    detail.count * product.count
+                )
+
+    return unique_product_list
+
+
+def check_for_quantity(unique_product_list: dict):
+    for item in unique_product_list:
+        product = get_object_or_404(Product, id=item)
+        latest_quantity = int(str(product.quantities.order_by("-created_at").first()))
+
+        if unique_product_list[item] > latest_quantity:
+            return {"message": f"موجودی {product} کافی نیست", "status": False}
+
+    return {"status": True, "message": "ok"}
 
 
 # Create API --------------------------------------------------------------------
@@ -113,6 +152,19 @@ class InvoiceCreateView(CreateAPIView):
         payment_type_id = request.data.get("payment_type_id")
 
         temp_invoice = get_object_or_404(TempInvoice, id=temp_invoice_id)
+
+        temp_invoice_products_list = temp_invoice.temp_invoice_products.all()
+
+        unique_product_dict = get_unique_product_total_count(temp_invoice_products_list)
+
+        quantity_check = check_for_quantity(unique_product_dict)
+
+        if not quantity_check["status"]:
+            return Response(
+                {"message": quantity_check["message"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         payment_type = get_object_or_404(PaymentType, id=payment_type_id)
 
         new_invoice = None
@@ -136,6 +188,20 @@ class InvoiceCreateView(CreateAPIView):
                 new_detail = InvoiceProductDetails.objects.create(
                     invoice_product=new_product, count=detail.count, price=detail.price
                 )
+
+        for item in unique_product_dict:
+            product = get_object_or_404(Product, id=item)
+            latest_quantity = int(
+                str(product.quantities.order_by("-created_at").first())
+            )
+
+            new_quantity = latest_quantity - unique_product_dict[item]
+
+            quantity = Quantity.objects.create(
+                product=product, quantity=new_quantity, is_by_user=False
+            )
+
+        temp_invoice.delete()
 
         return Response({"data": "ok"}, status=status.HTTP_200_OK)
 

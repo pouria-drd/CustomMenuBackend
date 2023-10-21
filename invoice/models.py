@@ -94,7 +94,7 @@ class TempInvoice(models.Model):
 
 class TempInvoiceProducts(models.Model):
     invoice = models.ForeignKey(
-        TempInvoice, related_name="temp_invoice_products", on_delete=models.RESTRICT
+        TempInvoice, related_name="temp_invoice_products", on_delete=models.CASCADE
     )
 
     title = models.CharField(max_length=100, blank=True)
@@ -111,7 +111,7 @@ class TempInvoiceProductDetails(models.Model):
     invoice_product = models.ForeignKey(
         TempInvoiceProducts,
         related_name="temp_invoice_product_details",
-        on_delete=models.RESTRICT,
+        on_delete=models.CASCADE,
     )
 
     price = models.ForeignKey(

@@ -11,6 +11,10 @@ urlpatterns = [
     ),
     # GET ----------------------------------------------------------------------
     path("payment-choices/", PaymentChoiceListView.as_view(), name="payment-choices"),
+    # main invoice
+    path("invoice-list/", InvoiceListView.as_view(), name="invoice-list"),
+    path("invoices/<int:pk>/", InvoiceDetailAPIView.as_view(), name="invoice-detail"),
+    # temp invoice
     path("temp-invoice-list/", TempInvoiceListView.as_view(), name="temp-invoice-list"),
     path(
         "temp-invoice-detail/<int:pk>",

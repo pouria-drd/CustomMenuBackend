@@ -1,3 +1,4 @@
+from datetime import date
 from invoice.models import *
 from custom_menu.models import *
 from invoice.serializers import *
@@ -7,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAdminUser
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 
 
 # List API ----------------------------------------------------------------------
@@ -20,6 +21,109 @@ class PaymentChoiceListView(ListAPIView):
     queryset = PaymentType.objects.all()
     serializer_class = PaymentTypeSerializer  # Serializer class for Category model
     permission_classes = [IsAdminUser]  # Allow any user to access this view
+
+
+class InvoiceDetailAPIView(APIView):
+    """
+    API endpoint that allow a detailed invoice to be viewed.
+    """
+
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
+
+    def get(self, request, pk):
+        try:
+            invoice = get_object_or_404(Invoice, id=pk)
+
+            data = {
+                "id": invoice.id,
+                "created_at": invoice.created_at,
+                "description": invoice.description,
+                "products": [],
+            }
+
+            username = f"{invoice.user}"
+
+            if username:
+                data["user"] = username
+
+            invoice_total_price = 0
+
+            for product in invoice.invoice_products.prefetch_related(
+                "invoice_product_details__price__product"
+            ):
+                product_data = {
+                    "title": product.title,
+                    "description": product.description,
+                    "count": product.count,
+                    "details": [],
+                }
+
+                product_total_price = 0
+
+                for detail in product.invoice_product_details.all():
+                    detail_data = {
+                        "name": str(detail.price.product),
+                        "has_tax": detail.price.product.has_tax,
+                        "price": str(detail.price),
+                        "count": detail.count,
+                    }
+
+                    total_price = detail.count * int(str(detail.price))
+
+                    if detail.price.product.has_tax:
+                        total_price += round(total_price * 9 / 100)
+
+                    product_total_price += total_price
+
+                    detail_data["total_price"] = total_price
+
+                    product_data["details"].append(detail_data)
+
+                product_data["total_price"] = product_total_price * product.count
+
+                data["products"].append(product_data)
+
+                invoice_total_price += product_data["total_price"]
+
+            data["total_price"] = invoice_total_price
+
+            return Response(data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(e)
+            return Response(
+                {"message": "مشکلی پیش آمده است"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class InvoiceListView(ListAPIView):
+    """
+    API endpoint that allows invoice to be viewed.
+    """
+
+    # Query to retrieve all instances of Category model
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer  # Serializer class for Category model
+    permission_classes = [IsAdminUser]  # Allow any user to access this view
+
+    def get_queryset(self):
+        queryset = Invoice.objects.all()
+        start_date = self.request.query_params.get(
+            "start_date", None
+        )  # Get the start date from query parameters
+        end_date = self.request.query_params.get(
+            "end_date", None
+        )  # Get the end date from query parameters
+
+        if start_date and end_date:
+            # Filter invoices between start_date and end_date
+            queryset = queryset.filter(created_at__date__range=[start_date, end_date])
+        else:
+            # Filter invoices for today's date
+            queryset = queryset.filter(created_at__date=date.today())
+
+        return queryset
 
 
 class TempInvoiceListView(ListAPIView):
@@ -93,7 +197,7 @@ class TempInvoiceDetailView(APIView):
 
             data["total_price"] = invoice_total_price
 
-            return Response({"data": data}, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)

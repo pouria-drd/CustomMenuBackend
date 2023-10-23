@@ -10,6 +10,7 @@ urlpatterns = [
         name="create-temp-invoice",
     ),
     # GET ----------------------------------------------------------------------
+    path("print/<int:pk>/", PrintInvoiceAPIView.as_view(), name="print"),
     path("payment-choices/", PaymentChoiceListView.as_view(), name="payment-choices"),
     # main invoice
     path("invoice-list/", InvoiceListView.as_view(), name="invoice-list"),

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>فاکتور</title>
+  </head>
+  <style>
+    .main-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      font-family: monospace;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .container1 {
+      gap: 16px;
+      width: 80vw;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container2 {
+      gap: 16px;
+      padding: 16px;
+      display: flex;
+      border-radius: 12px;
+      flex-direction: column;
+      border: 1px solid gray;
+    }
+
+    .container3 {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .main-table {
+      width: 100%;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .main-table-head {
+      color: black;
+      text-align: center;
+    }
+
+    .px-6 {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    .py-3 {
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    @page {
+      size: A5;
+      margin: 5cm;
+    }
+  </style>
+  <body>
+    <div class="main-container">
+      <h1>فاکتور {{ invoice_detail.invoice_number }}</h1>
+
+      <div class="container1">
+        {% for product in invoice_detail.products %}
+        <div class="container2">
+          <div class="container3">
+            <h3>تعداد: {{ product.count }}</h3>
+            <h3>آیتم {{ forloop.counter }}</h3>
+          </div>
+
+          <table class="main-table">
+            <thead class="main-table-head">
+              <tr>
+                <th scope="col" class="px-6 py-3">تعداد</th>
+                <th scope="col" class="px-6 py-3">فی</th>
+                <th scope="col" class="px-6 py-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for detail in product.details %}
+              <tr style="border-bottom-width: 1px; padding: 4px">
+                <td class="px-6 py-3">{{ detail.count }}</td>
+
+                <td class="px-6 py-3">{{ detail.price }} تومان</td>
+
+                <td class="px-6 py-3">{{ detail.name }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="flex justify-start">
+            <h3>قیمت کل: {{ product.total_price }} تومان</h3>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- {% for x in invoice_detail %}
+      <li>{{ x }}</li>
+
+      {% endfor %} -->
+    </div>
+  </body>
+</html>

@@ -28,6 +28,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "persian_name",
+            "english_name",
             "description",
             "updated_at",
             "max_amount",
@@ -129,6 +130,8 @@ class ProductUpdateSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             "persian_name",
+            "english_name",
+            "max_amount",
             "description",
             "max_amount",
             "has_tax",

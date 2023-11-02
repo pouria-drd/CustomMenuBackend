@@ -42,7 +42,7 @@ class ProductListView(ListAPIView):
 
     queryset = Product.objects.all()  # Query to retrieve all instances of Product model
     serializer_class = ProductSerializer  # Serializer class for Product model
-    permission_classes = [IsAdminUser]  # Only admin can access this view
+    permission_classes = [AllowAny]  # Only admin can access this view
 
 
 # Create API --------------------------------------------------------------------

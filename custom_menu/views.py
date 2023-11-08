@@ -45,6 +45,18 @@ class ProductListView(ListAPIView):
     permission_classes = [AllowAny]  # Only admin can access this view
 
 
+class DefaultMenuProductListView(ListAPIView):
+    """
+    This view lists all instances of the DefaultMenuProduct model.
+    """
+
+    queryset = (
+        DefaultMenuProductHeader.objects.all()
+    )  # Query to retrieve all instances of Default Menu Product Header model
+    serializer_class = DefaultMenuProductSerializer  # Serializer class for Default Menu Product Header model
+    permission_classes = [AllowAny]  # Only admin can access this view
+
+
 # Create API --------------------------------------------------------------------
 class CategoryCreateView(CreateAPIView):
     """

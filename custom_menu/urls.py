@@ -1,19 +1,5 @@
 from django.urls import path
-from custom_menu.views import (
-    # List view
-    ProductListView,
-    CategoryListView,
-    # Full data
-    FullCategoryListView,
-    # Create view
-    PriceCreateView,
-    ProductCreateView,
-    QuantityCreateView,
-    CategoryCreateView,
-    # Update view
-    ProductUpdateView,
-    CategoryUpdateView,
-)
+from custom_menu.views import *
 
 urlpatterns = [
     # Full data
@@ -21,6 +7,11 @@ urlpatterns = [
     # List view
     path("products/", ProductListView.as_view(), name="product-list"),
     path("categories/", CategoryListView.as_view(), name="category-list"),
+    path(
+        "default-menu-products/",
+        DefaultMenuProductListView.as_view(),
+        name="default-menu-product-list",
+    ),
     # Create view
     path("prices/create/", PriceCreateView.as_view(), name="price-create"),
     path("products/create/", ProductCreateView.as_view(), name="product-create"),

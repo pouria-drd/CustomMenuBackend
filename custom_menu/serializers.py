@@ -1,6 +1,6 @@
 #  import base64
+from custom_menu.models import *
 from rest_framework import serializers
-from custom_menu.models import Product, Category, Price, Quantity
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -153,3 +153,23 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             "product_image",
             "category",
         ]
+
+
+class DefaultMenuProductSerializer(serializers.ModelSerializer):
+    product_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DefaultMenuProductHeader
+        fields = [
+            "persian_name",
+            "description",
+            "max_amount",
+            "is_active",
+            "product_image",
+            "category",
+        ]
+
+    def get_product_image(self, obj):
+        if obj.product_image:
+            return self.context["request"].build_absolute_uri(obj.product_image.url)
+        return None

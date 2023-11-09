@@ -28,8 +28,8 @@ class FullCategoryListView(ListAPIView):
     This view lists all instances of the Category model.
     """
 
-    queryset = (
-        Category.objects.all()
+    queryset = Category.objects.all().filter(
+        is_active=True
     )  # Query to retrieve all instances of Category model
     serializer_class = FullCategorySerializer  # Serializer class for Category model
     permission_classes = [AllowAny]  # Only admin can access this view
@@ -40,7 +40,9 @@ class ProductListView(ListAPIView):
     This view lists all instances of the Product model.
     """
 
-    queryset = Product.objects.all()  # Query to retrieve all instances of Product model
+    queryset = Product.objects.all().filter(
+        is_active=True
+    )  # Query to retrieve all instances of Product model
     serializer_class = ProductSerializer  # Serializer class for Product model
     permission_classes = [AllowAny]  # Only admin can access this view
 
@@ -50,8 +52,8 @@ class DefaultMenuProductListView(ListAPIView):
     This view lists all instances of the DefaultMenuProduct model.
     """
 
-    queryset = (
-        DefaultMenuProductHeader.objects.all()
+    queryset = DefaultMenuProductHeader.objects.all().filter(
+        is_active=True
     )  # Query to retrieve all instances of Default Menu Product Header model
     serializer_class = DefaultMenuProductSerializer  # Serializer class for Default Menu Product Header model
     permission_classes = [AllowAny]  # Only admin can access this view

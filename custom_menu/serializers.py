@@ -19,9 +19,11 @@ class QuantitySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(read_only=True, slug_field="persian_name")
+    category_index = serializers.SerializerMethodField()
     latest_price = serializers.SerializerMethodField()
     latest_quantity = serializers.SerializerMethodField()
     product_image = serializers.SerializerMethodField()
+    product_icon = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -35,10 +37,16 @@ class ProductSerializer(serializers.ModelSerializer):
             "has_tax",
             "is_active",
             "category",
+            "category_index",
             "latest_price",
             "latest_quantity",
             "product_image",
+            "product_icon",
         ]
+
+    def get_category_index(self, obj):
+        category_index_number = obj.category.index_number
+        return category_index_number
 
     def get_latest_price(self, obj):
         latest_price = obj.prices.order_by("-id").first()
@@ -60,6 +68,11 @@ class ProductSerializer(serializers.ModelSerializer):
             return self.context["request"].build_absolute_uri(obj.product_image.url)
         return None
 
+    def get_product_icon(self, obj):
+        if obj.product_icon:
+            return self.context["request"].build_absolute_uri(obj.product_icon.url)
+        return None
+
 
 class FullCategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True)
@@ -73,6 +86,7 @@ class FullCategorySerializer(serializers.ModelSerializer):
             "updated_at",
             "persian_name",
             "english_name",
+            "index_number",
             "category_image",
             "products",
         ]
@@ -93,6 +107,7 @@ class CategorySerializer(serializers.ModelSerializer):
             "persian_name",
             "english_name",
             "is_active",
+            "index_number",
             "category_image",
         ]
 

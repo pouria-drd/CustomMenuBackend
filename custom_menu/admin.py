@@ -7,6 +7,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = [
         "persian_name",
         "english_name",
+        "index_number",
         "is_active",
         "created_at",
         "updated_at",
@@ -40,6 +41,7 @@ class ProductAdmin(admin.ModelAdmin):
         "updated_at",
         "guid",
         "img_preview",
+        "icon_preview",
     ]
 
     readonly_fields = [

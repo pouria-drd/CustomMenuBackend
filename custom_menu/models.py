@@ -12,6 +12,8 @@ class Category(models.Model):
         max_length=100,
     )
 
+    index_number = models.PositiveIntegerField(default=0)
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
@@ -58,6 +60,10 @@ class Product(models.Model):
         default="product_default.png", upload_to="images/products/"
     )
 
+    product_icon = models.ImageField(
+        default="product_default.png", upload_to="images/products_icon/"
+    )
+
     category = models.ForeignKey(
         Category, on_delete=models.RESTRICT, related_name="products"
     )
@@ -67,6 +73,9 @@ class Product(models.Model):
 
     def img_preview(self):
         return mark_safe(f'<img src = "{self.product_image.url}" width = "75"/>')
+
+    def icon_preview(self):
+        return mark_safe(f'<img src = "{self.product_icon.url}" width = "75"/>')
 
 
 class Price(models.Model):

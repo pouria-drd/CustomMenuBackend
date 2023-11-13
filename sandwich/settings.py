@@ -159,23 +159,25 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "192.168.1.102",
     "http://localhost:5173",
+    "172.20.10.2",
 ]
 
 INTERNAL_IPS = [
     "127.0.0.1",
     "192.168.1.102",
+    "172.20.10.2",
 ]
 
 # CSRF_COOKIE_NAME = 'csrftoken'
 # CSRF_HEADER_NAME = 'X-CSRFToken'
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ORIGIN_WHITELIST = [
-    "http://127.0.0.1:5173",
-    "http://localhost:5173",
-    "http://192.168.1.102:5173",
-    # r"^https://\w+\.example\.com$",
-]
+# CORS_ORIGIN_WHITELIST = [
+#     "http://127.0.0.1:5173",
+#     "http://localhost:5173",
+#     "http://192.168.1.102:5173",
+#     # r"^https://\w+\.example\.com$",
+# ]
 
 CORS_ALLOW_METHODS = [
     "DELETE",

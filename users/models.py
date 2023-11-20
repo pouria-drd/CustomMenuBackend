@@ -3,10 +3,10 @@ from django.db import models
 
 
 class CustomerUser(models.Model):
-    first_name = models.CharField(max_length=32)
-    last_name = models.CharField(max_length=32)
+    first_name = models.CharField(max_length=32, null=True)
+    last_name = models.CharField(max_length=32, null=True)
 
-    details = models.CharField(max_length=255, blank=True)
+    details = models.CharField(max_length=255, blank=True, null=True)
 
     phone_number = models.CharField(max_length=11, unique=True)
     is_active = models.BooleanField(

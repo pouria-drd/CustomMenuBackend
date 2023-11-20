@@ -1,5 +1,5 @@
 from django.contrib import admin
-from users.models import CustomerUser
+from users.models import CustomerUser, CustomerLoginCode
 
 
 @admin.register(CustomerUser)
@@ -22,4 +22,15 @@ class CustomerUserAdmin(admin.ModelAdmin):
     search_fields = [
         "persian_name",
         "phone_number",
+    ]
+
+
+@admin.register(CustomerLoginCode)
+class CustomerLoginCodeAdmin(admin.ModelAdmin):
+    list_display = [
+        "customer",
+        "code",
+        "failed_tries",
+        "created_at",
+        "updated_at",
     ]

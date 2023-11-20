@@ -1,13 +1,45 @@
+from users.customer_helper_methods import *
+
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import CreateAPIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User, Group
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from users.serializers import UserSerializer, GroupSerializer, LoginSerializer
+
+
+class RequestLoginView(CreateAPIView):
+    """
+    API endpoint that check phone number exists or not.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        try:
+            phone_number = request.data.get("phoneNumber")
+
+            if not validate_phone_number(phone_number):
+                return Response(
+                    {"message": "شماره وارد شده معتبر نمی باشد"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            code = get_or_create_login_code(phone_number=phone_number)
+
+            return Response(code, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(e)
+            return Response(
+                {"message": "خطایی رخ داده است دوباره تلاش کنید"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class LogoutView(APIView):

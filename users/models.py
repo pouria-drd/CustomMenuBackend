@@ -22,12 +22,10 @@ class CustomerUser(models.Model):
 
 class CustomerLoginCode(models.Model):
     customer = models.OneToOneField(CustomerUser, on_delete=models.CASCADE)
-    code = models.PositiveIntegerField()
-    failed_tries = models.PositiveIntegerField()
-    last_try = models.DateTimeField(null=True)
+    code = models.PositiveIntegerField(null=True)
+    failed_tries = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    client_ip = models.CharField(max_length=255)
-    client_user_agent = models.CharField(max_length=255)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class CustomerLoginSession(models.Model):

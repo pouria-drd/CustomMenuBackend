@@ -6,6 +6,18 @@ from datetime import datetime
 max_tries = 2
 
 
+def validate_login_code(login_code, phone_number):
+    customer_exists = CustomerUser.objects.filter(phone_number=phone_number).exists()
+
+    if customer_exists:
+        code_exists = CustomerLoginCode.objects.filter(
+            customer__phone_number=phone_number, code=login_code
+        ).exists()
+        return code_exists
+    else:
+        return False
+
+
 def validate_phone_number(phone_number):
     pattern = r"^(\+98|0)?9\d{9}$"  # This pattern matches Iran phone numbers in the format +989123456789 or 09123456789
     if re.match(pattern, phone_number):
@@ -19,11 +31,9 @@ def get_or_create_login_code(phone_number):
     # user_agent = request.META.get("HTTP_USER_AGENT")
     # ip_address = request.META.get("REMOTE_ADDR")
 
-    customer, status = CustomerUser.objects.get_or_create(phone_number=phone_number)
+    customer, _ = CustomerUser.objects.get_or_create(phone_number=phone_number)
 
-    customer_login_code, status = CustomerLoginCode.objects.get_or_create(
-        customer=customer
-    )
+    customer_login_code, _ = CustomerLoginCode.objects.get_or_create(customer=customer)
 
     if customer_login_code.failed_tries > max_tries:
         customer.is_active = False
@@ -59,3 +69,18 @@ def get_or_create_login_code(phone_number):
         "status": True,
         "message": code,
     }
+
+
+def get_or_create_login_session(request, phone_number):
+    user_agent = request.META.get("HTTP_USER_AGENT")
+    ip_address = request.META.get("REMOTE_ADDR")
+
+    customer = CustomerUser.objects.get(phone_number=phone_number)
+
+    login_session, _ = CustomerLoginSession.objects.get_or_create(
+        customer=customer, client_ip=ip_address, client_user_agent=user_agent
+    )
+
+    login_session.save()
+
+    return login_session.session_guid

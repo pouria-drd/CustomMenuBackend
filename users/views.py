@@ -13,9 +13,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from users.serializers import UserSerializer, GroupSerializer, LoginSerializer
 
 
-class RequestLoginView(CreateAPIView):
+class RequestLoginCodeView(CreateAPIView):
     """
-    API endpoint that check phone number exists or not.
+    API endpoint that users can requests for login code.
     """
 
     permission_classes = [AllowAny]
@@ -33,6 +33,39 @@ class RequestLoginView(CreateAPIView):
             code = get_or_create_login_code(phone_number=phone_number)
 
             return Response(code, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(e)
+            return Response(
+                {"message": "خطایی رخ داده است دوباره تلاش کنید"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class ConfirmLoginCodeView(CreateAPIView):
+    """
+    API endpoint that checks login code is valid or not.
+    """
+
+    def post(self, request):
+        try:
+            login_code = request.data.get("loginCode")
+            phone_number = request.data.get("phoneNumber")
+
+            if not validate_phone_number(phone_number):
+                return Response(
+                    {"message": "شماره وارد شده معتبر نمی باشد"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if not validate_login_code(login_code, phone_number):
+                return Response(
+                    {"message": "کد وارد شده معتبر نمی باشد"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                session_guid = get_or_create_login_session(request, phone_number)
+                return Response({"message": session_guid}, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)

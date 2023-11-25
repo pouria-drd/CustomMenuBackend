@@ -29,7 +29,9 @@ class CustomerLoginCode(models.Model):
 
 
 class CustomerLoginSession(models.Model):
-    customer = models.OneToOneField(CustomerUser, on_delete=models.CASCADE)
+    customer = models.ForeignKey(
+        CustomerUser, on_delete=models.CASCADE, related_name="sessions"
+    )
     session_guid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     last_try = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)

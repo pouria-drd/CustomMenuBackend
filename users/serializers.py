@@ -14,7 +14,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
 class CustomerUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model: CustomerUser
+        model = CustomerUser
         fields = ["first_name", "last_name", "phone_number"]
 
 

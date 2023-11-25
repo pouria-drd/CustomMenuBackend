@@ -1,16 +1,56 @@
 from users.customer_helper_methods import *
 
+from users.serializers import *
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import CreateAPIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User, Group
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from users.serializers import UserSerializer, GroupSerializer, LoginSerializer
+from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView
+
+
+class RegisterUserView(UpdateAPIView):
+    permission_classes = [AllowAny]
+
+    def patch(self, request):
+        guid = request.data.get("token")
+        first_name = request.data.get("lastName")
+        last_name = request.data.get("firstName")
+        phone_number = request.data.get("phoneNumber")
+
+        try:
+            customer = CustomerUser.objects.get(phone_number=phone_number)
+            customer.first_name = first_name
+            customer.last_name = last_name
+            customer.save()
+
+            return Response({"message": "خوش آمدید"}, status=status.HTTP_200_OK)
+
+        except:
+            return Response(
+                {"message": "دوباره تلاش کنید"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class CustomerDetailView(RetrieveAPIView):
+    serializer_class = CustomerUserSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.customer
+
+        # Serialize the user using your serializer
+        serializer = self.get_serializer(user)
+
+        return Response(
+            {
+                "user": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class RequestLoginCodeView(CreateAPIView):
@@ -30,9 +70,12 @@ class RequestLoginCodeView(CreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            code = get_or_create_login_code(phone_number=phone_number)
+            result = get_or_create_login_code(phone_number=phone_number)
 
-            return Response(code, status=status.HTTP_200_OK)
+            if result["status"] == False:
+                return Response({"message": result}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({"message": result}, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)
@@ -64,8 +107,16 @@ class ConfirmLoginCodeView(CreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             else:
-                session_guid = get_or_create_login_session(request, phone_number)
-                return Response({"message": session_guid}, status=status.HTTP_200_OK)
+                session_guid, requiredRegistration = get_or_create_login_session(
+                    request, phone_number
+                )
+
+                data = {
+                    "token": session_guid,
+                    "requiredRegistration": requiredRegistration,
+                }
+
+                return Response({"message": data}, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)

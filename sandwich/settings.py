@@ -57,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "users.middleware.CustomTokenAuthenticationMiddleware",
 ]
 
 ROOT_URLCONF = "sandwich.urls"
@@ -195,4 +196,10 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
+    "X-Customer-Auth",
+]
+
+# custom url that need custom toke
+CUSTOM_TOKEN_ALLOWED_URLS = [
+    "/sandwich-api/users/get-customer/",
 ]

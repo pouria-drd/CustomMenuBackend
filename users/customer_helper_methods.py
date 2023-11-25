@@ -10,10 +10,15 @@ def validate_login_code(login_code, phone_number):
     customer_exists = CustomerUser.objects.filter(phone_number=phone_number).exists()
 
     if customer_exists:
-        code_exists = CustomerLoginCode.objects.filter(
+        code_exists = CustomerLoginCode.objects.get(
             customer__phone_number=phone_number, code=login_code
-        ).exists()
-        return code_exists
+        )
+
+        if code_exists:
+            code_exists.delete()
+            return True
+
+        return False
     else:
         return False
 
@@ -42,6 +47,7 @@ def get_or_create_login_code(phone_number):
         return {
             "status": False,
             "message": "حساب کاربری شما مسدود شده است",
+            "TTW": 999999,
         }
 
     if customer_login_code.failed_tries > 0:
@@ -57,6 +63,7 @@ def get_or_create_login_code(phone_number):
             return {
                 "status": False,
                 "message": f"تا ارسال مجدد {time_to_wait}",
+                "TTW": time_to_wait,
             }
 
     customer_login_code.failed_tries += 1
@@ -65,9 +72,12 @@ def get_or_create_login_code(phone_number):
 
     customer_login_code.save()
 
+    time_to_wait = 40
+
     return {
         "status": True,
         "message": code,
+        "TTW": time_to_wait,
     }
 
 
@@ -77,10 +87,20 @@ def get_or_create_login_session(request, phone_number):
 
     customer = CustomerUser.objects.get(phone_number=phone_number)
 
+    requiredRegistration = True
+
+    if not (customer.first_name or customer.last_name):
+        requiredRegistration = True
+    else:
+        requiredRegistration = False
+
     login_session, _ = CustomerLoginSession.objects.get_or_create(
         customer=customer, client_ip=ip_address, client_user_agent=user_agent
     )
 
     login_session.save()
 
-    return login_session.session_guid
+    return [
+        login_session.session_guid,
+        requiredRegistration,
+    ]
